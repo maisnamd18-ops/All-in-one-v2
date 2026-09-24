@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import requests
 import streamlit as st
-import plotly.graph_objects as go
 
 st.set_page_config(page_title="All-in-One Delta V2", page_icon="📈", layout="wide")
 BASE = "https://api.india.delta.exchange"
@@ -139,7 +138,7 @@ st.caption("Independent multi-asset research/backtester. It does not claim to re
 with st.sidebar:
     st.header("V2 controls")
     symbols=st.multiselect("Delta symbols",
-        ["BTCUSD","ETHUSD","XAUTUSD","BNBUSD","DOGEUSD","HYPEUSD","AVAXUSD","DOTUSD"],
+        ["BTCUSD","ETHUSD","SOLUSD","XRPUSD","XAUTUSD","PAXGUSD","SLVONUSD","BNBUSD","DOGEUSD","HYPEUSD","AVAXUSD","DOTUSD"],
         ["BTCUSD","ETHUSD","XAUTUSD"])
     resolution=st.selectbox("Timeframe",["5m","15m","30m","1h","4h"],1)
     months=st.slider("Backtest months",1,24,12)
@@ -197,9 +196,9 @@ if st.button("🚀 RUN V2 BACKTEST",type="primary",use_container_width=True):
     c1.metric("Final",f"₹{final:,.2f}"); c2.metric("Net P&L",f"₹{pnl:,.2f}")
     c3.metric("Win rate",f"{win:.2f}%"); c4.metric("Profit factor",f"{pf:.2f}")
     c5.metric("Max DD",f"{dd:.2f}%"); c6.metric("Trades",len(trades))
-    fig=go.Figure(go.Scatter(x=eq.time,y=eq.equity,mode="lines",name="Portfolio"))
-    fig.update_layout(height=420,title="V2 Portfolio Equity Curve",xaxis_title="Time",yaxis_title="Equity")
-    st.plotly_chart(fig,use_container_width=True)
+    chart_eq = eq.set_index("time")[["equity"]]
+    st.subheader("V2 Portfolio Equity Curve")
+    st.line_chart(chart_eq, use_container_width=True, height=420)
     st.subheader("Per-symbol results")
     stats=trades.groupby("symbol").agg(Trades=("pnl","size"),PnL=("pnl","sum"),
         WinRate=("pnl",lambda s:(s>0).mean()*100),AvgR=("R","mean")).reset_index()
@@ -210,4 +209,3 @@ if st.button("🚀 RUN V2 BACKTEST",type="primary",use_container_width=True):
                        "all_in_one_delta_v2_trades.csv","text/csv")
 st.divider()
 st.caption("V2 uses Delta Exchange India's public historical candle endpoint. No API key and no live-order functions are included.")
-
