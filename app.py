@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import requests
 import streamlit as st
-
+import plotly.graph_objects as go
 st.set_page_config(page_title="All-in-One Delta V2", page_icon="📈", layout="wide")
 BASE = "https://api.india.delta.exchange"
 
